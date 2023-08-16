@@ -9,6 +9,7 @@ class Product {
         this.thumbnail = thumbnail;
         this.code = code;
         this.stock = stock;
+        this.status = true;
     }
 }
 
@@ -55,7 +56,7 @@ export class ProductManager {
 
     addProduct = async(title, description, price, thumbnail, code, stock) => {
         await this.recoverProducts();
-        if(!title || !description || !price || !thumbnail || !code || !stock){
+        if(!title || !description || !price || !code || !stock){
             console.log('Todos los campos son obligatorios');
             return { success: false, message: "todos los campos son obligatorios" };
         }
@@ -87,16 +88,32 @@ export class ProductManager {
         }
     }
 
-    updateProduct = async(code, updatedProduct) => {
-        const index = await this.products.findIndex(product => product.code === code);
+    updateProduct = async(id, updatedProduct) => {
+        const index = await this.products.findIndex(product => product.id === id);
+        console.log(id)
         if (index !== -1) {
+            console.log(index);
             this.products[index] = {...this.products[index], ...updatedProduct};
+            console.log(this.products)
+            await fs.writeFile(this.path, JSON.stringify(this.products,null,2));
+
         } else {
             console.log('Producto no encontrado');
         }
     }
 
-    getProductById = async(code) => {
+    getProductById = async(id) => {
+        await this.recoverProducts();
+        //let resProductById = await this.readProducts()
+        const product = this.products.find(product => product.id === id);
+        if (product) {
+            return product;
+        } else {
+            //console.log('Producto no encontrado');
+        }
+    }
+
+    getProductByCode = async(code) => {
         await this.recoverProducts();
         //let resProductById = await this.readProducts()
         const product = this.products.find(product => product.code === code);

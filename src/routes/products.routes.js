@@ -24,7 +24,7 @@ prodsRouter.get('/:id', async (req, res) => {
 prodsRouter.post('/', async (req, res) => {
     console.log(req.body);
     const { code } = req.body;
-    const confirmacion = await manager.getProductById(code)
+    const confirmacion = await manager.getProductByCode(code)
     if(confirmacion) {
         res.status(400).send("producto ya existente");
     } else {
@@ -39,6 +39,20 @@ prodsRouter.put('/:id', async (req, res) => {
     const { id } = req.params;
     const confirmacion = await manager.getProductById(parseInt(req.params.id));
     if(confirmacion) {
+        console.log("ingreso")
+        await manager.updateProduct(parseInt(id), req.body)
+        res.status(200).send("producto actualizado")
+    } else {
+        res.status(404).send("producto no encontrado")
+
+    }
+});
+
+prodsRouter.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const confirmacion = await manager.getProductById(parseInt(req.params.id));
+    if(confirmacion) {
+        console.log("ingreso")
         await manager.updateProduct(parseInt(id), req.body)
         res.status(200).send("producto actualizado")
     } else {
