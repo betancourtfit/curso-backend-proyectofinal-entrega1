@@ -37,6 +37,7 @@ export class ProductManager {
 
             if (data && data.length > 0) {
                 this.products = JSON.parse(data);
+                this.products = this.products.filter(prods => prods.status === true);
                 const maxIdProduct = this.products.reduce((prev, curr) => (prev.id > curr.id) ? prev : curr);
                 this.nextId = maxIdProduct.id + 1;
             } else {
@@ -78,11 +79,11 @@ export class ProductManager {
         return this.products;
     }
     
-    removeProduct = async(code) => {
-
-        const index = await this.products.findIndex(product => product.code === code);
+    removeProduct = async(id) => {
+        const index = await this.products.findIndex(product => product.id === id);
         if (index !== -1) {
-            this.products.splice(index, 1);
+            this.products[index].status = false;
+            await fs.writeFile(this.path, JSON.stringify(this.products,null,2));
         } else {
             console.log('Producto no encontrado');
         }

@@ -8,8 +8,8 @@ prodsRouter.get('/', async (req, res) => {
     let limit = parseInt(req.query.limit);
     console.log(limit)
     if(limit){
-    let allproducts = await (await manager.getProducts()).slice(0,limit)
-    res.send(await allproducts);
+    let allproducts = (await manager.getProducts()).slice(0,limit)
+    res.send(allproducts);
     } else {
         res.send(await manager.getProducts());
     }
@@ -55,6 +55,19 @@ prodsRouter.put('/:id', async (req, res) => {
         console.log("ingreso")
         await manager.updateProduct(parseInt(id), req.body)
         res.status(200).send("producto actualizado")
+    } else {
+        res.status(404).send("producto no encontrado")
+
+    }
+});
+
+prodsRouter.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    const confirmacion = await manager.getProductById(parseInt(req.params.id));
+    if(confirmacion) {
+        console.log("ingreso")
+        await manager.removeProduct(parseInt(id))
+        res.status(200).send("producto eliminado")
     } else {
         res.status(404).send("producto no encontrado")
 
